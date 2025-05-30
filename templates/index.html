@@ -37,8 +37,8 @@
                     <button class="btn btn-outline-secondary" id="clearBtn">
                         <i class="fas fa-eraser me-2"></i>Limpar Texto
                     </button>
-                    <button class="btn btn-success" id="printBtn" style="display: none;">
-                        <i class="fas fa-print me-2"></i>Imprimir Página
+                    <button class="btn btn-success" id="exportBtn" style="display: none;">
+                        <i class="fas fa-download me-2"></i>Exportar como Imagem
                     </button>
                 </div>
                 
@@ -54,7 +54,7 @@
                         <li>Linhas terminadas com ":" viram títulos de seção</li>
                         <li>Linhas começando com •, -, * viram listas</li>
                         <li>Parágrafos separados por linha em branco</li>
-                        <li>Use o botão imprimir para uma página limpa</li>
+                        <li>Use o botão exportar para salvar como imagem</li>
                     </ul>
                 </div>
             </div>
@@ -76,27 +76,35 @@
     </div>
 </div>
 
-<!-- Print Modal -->
-<div class="modal fade" id="printModal" tabindex="-1">
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fas fa-print me-2"></i>Imprimir Página Manuscrita
+                    <i class="fas fa-download me-2"></i>Exportar como Imagem
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Uma nova janela será aberta com a versão otimizada para impressão.</p>
+                <p>Seu texto manuscrito será convertido em uma imagem PNG de alta qualidade.</p>
+                <div class="mb-3">
+                    <label for="imageQuality" class="form-label">Qualidade da Imagem:</label>
+                    <select class="form-select" id="imageQuality">
+                        <option value="1">Baixa (rápido)</option>
+                        <option value="2" selected>Normal (recomendado)</option>
+                        <option value="3">Alta (melhor qualidade)</option>
+                    </select>
+                </div>
                 <p class="text-muted small">
                     <i class="fas fa-info-circle me-1"></i>
-                    Para melhores resultados, use papel A4 e configurações de margem padrão.
+                    A imagem será salva automaticamente na pasta de downloads do seu navegador.
                 </p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="confirmPrintBtn">
-                    <i class="fas fa-print me-2"></i>Abrir para Impressão
+                <button type="button" class="btn btn-primary" id="confirmExportBtn">
+                    <i class="fas fa-download me-2"></i>Exportar Imagem
                 </button>
             </div>
         </div>

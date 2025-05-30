@@ -10,18 +10,19 @@ class HandwritingApp {
         this.inputText = document.getElementById('inputText');
         this.transformBtn = document.getElementById('transformBtn');
         this.clearBtn = document.getElementById('clearBtn');
-        this.printBtn = document.getElementById('printBtn');
+        this.exportBtn = document.getElementById('exportBtn');
         this.notebookPreview = document.getElementById('notebookPreview');
         this.statusMessages = document.getElementById('statusMessages');
-        this.printModal = new bootstrap.Modal(document.getElementById('printModal'));
-        this.confirmPrintBtn = document.getElementById('confirmPrintBtn');
+        this.exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
+        this.confirmExportBtn = document.getElementById('confirmExportBtn');
+        this.imageQuality = document.getElementById('imageQuality');
     }
 
     attachEventListeners() {
         this.transformBtn.addEventListener('click', () => this.transformText());
         this.clearBtn.addEventListener('click', () => this.clearText());
-        this.printBtn.addEventListener('click', () => this.showPrintModal());
-        this.confirmPrintBtn.addEventListener('click', () => this.printPage());
+        this.exportBtn.addEventListener('click', () => this.showExportModal());
+        this.confirmExportBtn.addEventListener('click', () => this.exportAsImage());
         
         // Enable transform on Enter (Ctrl+Enter or Shift+Enter)
         this.inputText.addEventListener('keydown', (e) => {
@@ -69,7 +70,7 @@ class HandwritingApp {
             if (response.ok) {
                 this.displayHandwrittenText(data.formatted_text);
                 this.lastTransformedText = text;
-                this.printBtn.style.display = 'block';
+                this.exportBtn.style.display = 'block';
                 this.showStatus('Texto transformado com sucesso!', 'success');
             } else {
                 throw new Error(data.error || 'Erro desconhecido');
@@ -107,39 +108,66 @@ class HandwritingApp {
     clearText() {
         this.inputText.value = '';
         this.displayPlaceholder();
-        this.printBtn.style.display = 'none';
+        this.exportBtn.style.display = 'none';
         this.lastTransformedText = '';
         this.clearStatus();
         this.inputText.focus();
     }
 
-    showPrintModal() {
-        this.printModal.show();
+    showExportModal() {
+        this.exportModal.show();
     }
 
-    printPage() {
+    async exportAsImage() {
         const text = this.inputText.value.trim();
         if (!text) {
-            this.showStatus('Não há texto para imprimir.', 'warning');
+            this.showStatus('Não há texto para exportar.', 'warning');
             return;
         }
 
-        // Open print window with formatted text
-        const printUrl = `/print?text=${encodeURIComponent(text)}`;
-        const printWindow = window.open(printUrl, '_blank', 'width=800,height=600');
+        // Get quality setting
+        const quality = parseInt(this.imageQuality.value);
         
-        if (printWindow) {
-            printWindow.onload = () => {
-                // Small delay to ensure content is fully loaded
-                setTimeout(() => {
-                    printWindow.print();
-                }, 500);
-            };
-        } else {
-            this.showStatus('Popup bloqueado. Permita popups para imprimir.', 'warning');
+        try {
+            this.confirmExportBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Exportando...';
+            this.confirmExportBtn.disabled = true;
+
+            // Create a canvas to capture the notebook page
+            const notebook = this.notebookPreview;
+            
+            // Use html2canvas to capture the element
+            const canvas = await html2canvas(notebook, {
+                scale: quality,
+                backgroundColor: '#f5f5f5',
+                useCORS: true,
+                allowTaint: true,
+                width: notebook.offsetWidth,
+                height: notebook.offsetHeight
+            });
+
+            // Convert to blob and download
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `texto-manuscrito-${new Date().toISOString().slice(0,10)}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                this.showStatus('Imagem exportada com sucesso!', 'success');
+            }, 'image/png', 0.95);
+
+        } catch (error) {
+            console.error('Error exporting image:', error);
+            this.showStatus('Erro ao exportar imagem. Tente novamente.', 'danger');
+        } finally {
+            this.confirmExportBtn.innerHTML = '<i class="fas fa-download me-2"></i>Exportar Imagem';
+            this.confirmExportBtn.disabled = false;
         }
 
-        this.printModal.hide();
+        this.exportModal.hide();
     }
 
     setLoadingState(loading) {
