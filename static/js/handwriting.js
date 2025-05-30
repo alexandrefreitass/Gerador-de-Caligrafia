@@ -146,16 +146,51 @@ class HandwritingApp {
             // Create a canvas to capture the notebook page
             const notebook = this.notebookPreview;
             
-            // Use html2canvas to capture the element
+            // Use html2canvas to capture the element with enhanced background support
             const canvas = await html2canvas(notebook, {
                 scale: quality,
-                backgroundColor: '#f5f5f5',
+                backgroundColor: '#ffffff',
                 useCORS: true,
                 allowTaint: false,
                 width: notebook.offsetWidth,
                 height: notebook.offsetHeight,
                 logging: false,
-                removeContainer: true
+                removeContainer: true,
+                foreignObjectRendering: true,
+                onclone: (clonedDoc) => {
+                    // Force background styles in the cloned document
+                    const clonedNotebook = clonedDoc.querySelector('.notebook-page');
+                    if (clonedNotebook) {
+                        // Apply notebook background manually
+                        clonedNotebook.style.backgroundColor = '#ffffff';
+                        clonedNotebook.style.backgroundImage = `
+                            linear-gradient(to right, transparent 45px, #ff6b6b 45px, #ff6b6b 46px, transparent 46px),
+                            repeating-linear-gradient(
+                                transparent,
+                                transparent 24px,
+                                #87ceeb 24px,
+                                #87ceeb 25px
+                            )
+                        `;
+                        clonedNotebook.style.backgroundSize = '100% 100%';
+                        clonedNotebook.style.backgroundRepeat = 'no-repeat';
+                        
+                        // Ensure holes are visible
+                        const beforeElement = clonedDoc.createElement('div');
+                        beforeElement.style.cssText = `
+                            position: absolute;
+                            left: 15px;
+                            top: 0;
+                            width: 8px;
+                            height: 100%;
+                            background-image: radial-gradient(circle at center, #ddd 2px, transparent 2px);
+                            background-size: 8px 40px;
+                            background-repeat: repeat-y;
+                            z-index: 1;
+                        `;
+                        clonedNotebook.insertBefore(beforeElement, clonedNotebook.firstChild);
+                    }
+                }
             });
 
             // Convert to blob and download

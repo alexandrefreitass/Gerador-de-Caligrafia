@@ -21,7 +21,7 @@ body {
     max-width: 100%;
     height: auto;
     min-height: 500px;
-    background-color: #ffffff;
+    background-color: #ffffff !important;
     background-image: 
         /* Red margin line */
         linear-gradient(to right, transparent 45px, #ff6b6b 45px, #ff6b6b 46px, transparent 46px),
@@ -31,7 +31,9 @@ body {
             transparent 24px,
             #87ceeb 24px,
             #87ceeb 25px
-        );
+        ) !important;
+    background-size: 100% 100% !important;
+    background-repeat: no-repeat !important;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     position: relative;
     padding: 0;
