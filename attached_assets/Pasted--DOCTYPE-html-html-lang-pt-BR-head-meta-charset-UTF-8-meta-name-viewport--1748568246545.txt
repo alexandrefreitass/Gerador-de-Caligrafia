@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Caderno - Relatório Médico</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        
+        .notebook-page {
+            width: 210mm;
+            height: auto;
+            min-height: 500px;
+            background-color: #ffffff;
+            background-image: 
+                /* Linha vermelha da margem */
+                linear-gradient(to right, transparent 45px, #ff6b6b 45px, #ff6b6b 46px, transparent 46px),
+                /* Linhas azuis horizontais - espaçamento de 25px para coincidir com line-height */
+                repeating-linear-gradient(
+                    transparent,
+                    transparent 24px,
+                    #87ceeb 24px,
+                    #87ceeb 25px
+                );
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        /* Furos do caderno */
+        .notebook-page::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            width: 8px;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at center, #ddd 2px, transparent 2px);
+            background-size: 8px 40px;
+            background-repeat: repeat-y;
+        }
+        
+        .handwritten-text {
+            font-family: 'Kalam', cursive;
+            font-size: 13px;
+            line-height: 25px; /* Coincide exatamente com o espaçamento das linhas */
+            color: #000000;
+            padding: 25px 30px 40px 60px; /* 1 linha no início (25px = 1 linha) + 2 linhas no final */
+            white-space: pre-line;
+            transform: rotate(-0.3deg);
+            letter-spacing: 0.3px;
+        }
+        
+        .handwritten-text .title {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .handwritten-text .section-title {
+            font-weight: 700;
+            margin-top: 8px;
+            margin-bottom: 3px;
+        }
+        
+        .handwritten-text .bullet {
+            margin-left: 20px;
+            position: relative;
+            margin-bottom: 2px;
+        }
+        
+        .handwritten-text .bullet::before {
+            content: '•';
+            position: absolute;
+            left: -15px;
+            font-weight: bold;
+        }
+        
+        /* Simulação de irregularidades na escrita à mão */
+        .char-1 { transform: rotate(0.5deg) translateY(-0.5px); }
+        .char-2 { transform: rotate(-0.3deg) translateY(0.3px); }
+        .char-3 { transform: rotate(0.2deg) translateY(-0.2px); }
+        .char-4 { transform: rotate(-0.4deg) translateY(0.4px); }
+        .char-5 { transform: rotate(0.3deg) translateY(-0.3px); }
+        
+        /* Efeito de tinta preta */
+        .handwritten-text {
+            text-shadow: 0.3px 0.3px 0px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="notebook-page">
+        <div class="handwritten-text">
+<span class="title">O paciente Bruce Wayne apresenta uma série de alterações importantes nos exames, indicando problemas em múltiplas áreas.</span>
+
+<span class="section-title">Alterações Renais:</span>
+<span class="bullet">Função Renal Comprometida: A ureia está elevada (99 mg/dL) e a creatinina ligeiramente alta (1.23 mg/dL). O clearance de creatinina está muito baixo (24.50 mL/min/1.73m²), e a proteinúria de 24 horas está elevada (332.5 mg/24h). Isso tudo aponta para uma disfunção renal significativa.</span>
+
+<span class="section-title">Infecção Urinária:</span>
+<span class="bullet">Infecção Ativa: A uroanálise mostra proteínas, leucócitos muito elevados (550.000 /mL) e bactérias abundantes na urina. A urocultura confirma a presença de Escherichia coli com alta contagem, indicando uma infecção do trato urinário. O antibiograma indica quais antibióticos são eficazes (sensíveis) e quais não são (resistentes).</span>
+
+<span class="section-title">Metabolismo e Risco Cardiovascular:</span>
+<span class="bullet">Glicemia Elevada: O nível de glicose está alto (115 mg/dL), sugerindo hiperglicemia.</span>
+<span class="bullet">Perfil Lipídico de Risco: O colesterol total, LDL e o índice de Castelli estão elevados, enquanto o HDL está baixo. Isso representa um aumento no risco cardiovascular.</span>
+
+<span class="section-title">Outras Observações:</span>
+<span class="bullet">Inflamação/Infecção Sistêmica: O hemograma revela uma leucocitose muito elevada com neutrofilia (leucócitos 29.000 /mm³ e neutrófilos 80%), o que é um forte indicativo de um processo inflamatório ou infeccioso generalizado.</span>
+
+<span class="section-title">Recomendação:</span>
+É crucial que o médico responsável avalie todos esses resultados em conjunto para determinar a causa das alterações renais e da leucocitose, tratar a infecção urinária e manejar os riscos metabólicos e cardiovasculares.
+        </div>
+    </div>
+</body>
+</html>
