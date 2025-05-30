@@ -1,0 +1,243 @@
+/* Base styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Preview container */
+.preview-container {
+    padding: 20px;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-y: auto;
+}
+
+/* Notebook page styling */
+.notebook-page {
+    width: 210mm;
+    max-width: 100%;
+    height: auto;
+    min-height: 500px;
+    background-color: #ffffff;
+    background-image: 
+        /* Red margin line */
+        linear-gradient(to right, transparent 45px, #ff6b6b 45px, #ff6b6b 46px, transparent 46px),
+        /* Blue horizontal lines */
+        repeating-linear-gradient(
+            transparent,
+            transparent 24px,
+            #87ceeb 24px,
+            #87ceeb 25px
+        );
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+/* Notebook holes */
+.notebook-page::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    width: 8px;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at center, #ddd 2px, transparent 2px);
+    background-size: 8px 40px;
+    background-repeat: repeat-y;
+}
+
+/* Handwritten text styling */
+.handwritten-text {
+    font-family: 'Kalam', cursive;
+    font-size: 13px;
+    line-height: 25px;
+    color: #000000;
+    padding: 25px 30px 40px 60px;
+    white-space: pre-line;
+    transform: rotate(-0.3deg);
+    letter-spacing: 0.3px;
+    text-shadow: 0.3px 0.3px 0px rgba(0, 0, 0, 0.2);
+}
+
+/* Placeholder text styling */
+.placeholder-text {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    font-size: 14px !important;
+    transform: none !important;
+    text-shadow: none !important;
+    opacity: 0.6;
+    text-align: center;
+    padding: 50px 20px;
+    line-height: 1.6;
+}
+
+/* Title styling */
+.handwritten-text .title {
+    font-weight: 700;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Section title styling */
+.handwritten-text .section-title {
+    font-weight: 700;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    display: block;
+}
+
+/* Bullet point styling */
+.handwritten-text .bullet {
+    margin-left: 20px;
+    position: relative;
+    margin-bottom: 2px;
+    display: block;
+}
+
+.handwritten-text .bullet::before {
+    content: '•';
+    position: absolute;
+    left: -15px;
+    font-weight: bold;
+}
+
+/* Character variations for handwriting irregularities */
+.char-1 { transform: rotate(0.5deg) translateY(-0.5px); }
+.char-2 { transform: rotate(-0.3deg) translateY(0.3px); }
+.char-3 { transform: rotate(0.2deg) translateY(-0.2px); }
+.char-4 { transform: rotate(-0.4deg) translateY(0.4px); }
+.char-5 { transform: rotate(0.3deg) translateY(-0.3px); }
+
+/* Status messages */
+.alert {
+    margin-bottom: 0;
+}
+
+/* Responsive design */
+@media (max-width: 991.98px) {
+    .notebook-page {
+        width: 100%;
+        max-width: 600px;
+    }
+    
+    .preview-container {
+        padding: 10px;
+    }
+    
+    .handwritten-text {
+        font-size: 12px;
+        line-height: 23px;
+        padding: 20px 25px 30px 50px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .handwritten-text {
+        font-size: 11px;
+        line-height: 21px;
+        padding: 15px 20px 25px 45px;
+    }
+    
+    .notebook-page::before {
+        left: 12px;
+        width: 6px;
+        background-size: 6px 35px;
+    }
+    
+    .notebook-page {
+        background-image: 
+            linear-gradient(to right, transparent 40px, #ff6b6b 40px, #ff6b6b 41px, transparent 41px),
+            repeating-linear-gradient(
+                transparent,
+                transparent 20px,
+                #87ceeb 20px,
+                #87ceeb 21px
+            );
+    }
+}
+
+/* Print styles */
+@media print {
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+    
+    .preview-container {
+        padding: 0;
+        background: white;
+        min-height: auto;
+    }
+    
+    .notebook-page {
+        width: 100%;
+        max-width: none;
+        box-shadow: none;
+        margin: 0;
+        page-break-inside: avoid;
+    }
+    
+    .handwritten-text {
+        transform: rotate(-0.2deg);
+    }
+    
+    /* Hide everything except the notebook page during print */
+    .container-fluid > .row > .col-lg-5,
+    .modal,
+    .btn,
+    nav,
+    header,
+    footer {
+        display: none !important;
+    }
+}
+
+/* Loading animation */
+.loading {
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Custom scrollbar for webkit browsers */
+.preview-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.preview-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.preview-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.preview-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

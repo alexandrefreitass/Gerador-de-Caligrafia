@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Transformador de Texto Manuscrito{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row min-vh-100">
+        <!-- Input Panel -->
+        <div class="col-lg-5 bg-light border-end">
+            <div class="p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fas fa-pen-fancy text-primary me-3 fs-2"></i>
+                    <h1 class="h3 mb-0">Transformador de Texto Manuscrito</h1>
+                </div>
+                
+                <p class="text-muted mb-4">
+                    Digite ou cole seu texto abaixo para visualizá-lo em estilo manuscrito em uma página de caderno.
+                </p>
+                
+                <div class="mb-4">
+                    <label for="inputText" class="form-label fw-bold">
+                        <i class="fas fa-keyboard me-2"></i>Seu Texto:
+                    </label>
+                    <textarea 
+                        class="form-control" 
+                        id="inputText" 
+                        rows="15" 
+                        placeholder="Digite ou cole seu texto aqui...&#10;&#10;Você pode usar parágrafos, títulos e listas:&#10;&#10;Título do Documento&#10;&#10;Seção Principal:&#10;• Primeiro item&#10;• Segundo item&#10;&#10;Outra Seção:&#10;Texto normal aqui..."
+                        style="resize: vertical; min-height: 300px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;"
+                    ></textarea>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-lg" id="transformBtn">
+                        <i class="fas fa-magic me-2"></i>Transformar em Manuscrito
+                    </button>
+                    <button class="btn btn-outline-secondary" id="clearBtn">
+                        <i class="fas fa-eraser me-2"></i>Limpar Texto
+                    </button>
+                    <button class="btn btn-success" id="printBtn" style="display: none;">
+                        <i class="fas fa-print me-2"></i>Imprimir Página
+                    </button>
+                </div>
+                
+                <!-- Error/Status Messages -->
+                <div id="statusMessages" class="mt-3"></div>
+                
+                <div class="mt-4 p-3 bg-info bg-opacity-10 rounded">
+                    <h6 class="text-info mb-2">
+                        <i class="fas fa-lightbulb me-2"></i>Dicas:
+                    </h6>
+                    <ul class="small mb-0 text-muted">
+                        <li>Textos curtos sozinhos serão formatados como títulos</li>
+                        <li>Linhas terminadas com ":" viram títulos de seção</li>
+                        <li>Linhas começando com •, -, * viram listas</li>
+                        <li>Parágrafos separados por linha em branco</li>
+                        <li>Use o botão imprimir para uma página limpa</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preview Panel -->
+        <div class="col-lg-7">
+            <div class="preview-container">
+                <div id="notebookPreview" class="notebook-page">
+                    <div class="handwritten-text">
+                        <span class="placeholder-text text-muted">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Digite seu texto ao lado e clique em "Transformar em Manuscrito" para ver o resultado aqui.
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Print Modal -->
+<div class="modal fade" id="printModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-print me-2"></i>Imprimir Página Manuscrita
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Uma nova janela será aberta com a versão otimizada para impressão.</p>
+                <p class="text-muted small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Para melhores resultados, use papel A4 e configurações de margem padrão.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmPrintBtn">
+                    <i class="fas fa-print me-2"></i>Abrir para Impressão
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/handwriting.js') }}"></script>
+{% endblock %}
