@@ -132,6 +132,17 @@ class HandwritingApp {
             this.confirmExportBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Exportando...';
             this.confirmExportBtn.disabled = true;
 
+            // Wait for html2canvas to load if not available yet
+            let attempts = 0;
+            while (typeof html2canvas === 'undefined' && attempts < 10) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+
+            if (typeof html2canvas === 'undefined') {
+                throw new Error('html2canvas library not loaded');
+            }
+
             // Create a canvas to capture the notebook page
             const notebook = this.notebookPreview;
             
@@ -140,9 +151,11 @@ class HandwritingApp {
                 scale: quality,
                 backgroundColor: '#f5f5f5',
                 useCORS: true,
-                allowTaint: true,
+                allowTaint: false,
                 width: notebook.offsetWidth,
-                height: notebook.offsetHeight
+                height: notebook.offsetHeight,
+                logging: false,
+                removeContainer: true
             });
 
             // Convert to blob and download
