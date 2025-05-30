@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impressão - Texto Manuscrito</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Print-optimized styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        
+        .notebook-page {
+            width: 210mm;
+            height: auto;
+            min-height: 500px;
+            background-color: #ffffff;
+            background-image: 
+                /* Red margin line */
+                linear-gradient(to right, transparent 45px, #ff6b6b 45px, #ff6b6b 46px, transparent 46px),
+                /* Blue horizontal lines */
+                repeating-linear-gradient(
+                    transparent,
+                    transparent 24px,
+                    #87ceeb 24px,
+                    #87ceeb 25px
+                );
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            padding: 0;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+        
+        /* Notebook holes */
+        .notebook-page::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            width: 8px;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at center, #ddd 2px, transparent 2px);
+            background-size: 8px 40px;
+            background-repeat: repeat-y;
+        }
+        
+        .handwritten-text {
+            font-family: 'Kalam', cursive;
+            font-size: 13px;
+            line-height: 25px;
+            color: #000000;
+            padding: 25px 30px 40px 60px;
+            white-space: pre-line;
+            transform: rotate(-0.3deg);
+            letter-spacing: 0.3px;
+            text-shadow: 0.3px 0.3px 0px rgba(0, 0, 0, 0.2);
+        }
+        
+        .handwritten-text .title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .handwritten-text .section-title {
+            font-weight: 700;
+            margin-top: 8px;
+            margin-bottom: 3px;
+            display: block;
+        }
+        
+        .handwritten-text .bullet {
+            margin-left: 20px;
+            position: relative;
+            margin-bottom: 2px;
+            display: block;
+        }
+        
+        .handwritten-text .bullet::before {
+            content: '•';
+            position: absolute;
+            left: -15px;
+            font-weight: bold;
+        }
+        
+        /* Character variations for handwriting irregularities */
+        .char-1 { transform: rotate(0.5deg) translateY(-0.5px); }
+        .char-2 { transform: rotate(-0.3deg) translateY(0.3px); }
+        .char-3 { transform: rotate(0.2deg) translateY(-0.2px); }
+        .char-4 { transform: rotate(-0.4deg) translateY(0.4px); }
+        .char-5 { transform: rotate(0.3deg) translateY(-0.3px); }
+        
+        /* Print styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            
+            .notebook-page {
+                width: 100%;
+                max-width: none;
+                box-shadow: none;
+                margin: 0;
+                page-break-inside: avoid;
+            }
+            
+            .handwritten-text {
+                transform: rotate(-0.2deg);
+            }
+        }
+        
+        /* Screen-only controls */
+        .print-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+        
+        .print-controls button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .print-controls button:hover {
+            background: #0056b3;
+        }
+        
+        .print-controls button.secondary {
+            background: #6c757d;
+        }
+        
+        .print-controls button.secondary:hover {
+            background: #545b62;
+        }
+        
+        @media print {
+            .print-controls {
+                display: none !important;
+            }
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="print-controls">
+        <button onclick="window.print()">🖨️ Imprimir</button>
+        <button onclick="window.close()" class="secondary">❌ Fechar</button>
+    </div>
+    
+    <div class="notebook-page">
+        <div class="handwritten-text">
+            {% if formatted_text %}
+                {{ formatted_text|safe }}
+            {% else %}
+                <div class="empty-state">
+                    <p>Nenhum texto para imprimir.</p>
+                    <p><small>Volte à página principal e digite um texto primeiro.</small></p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        // Auto-focus for printing when page loads
+        window.addEventListener('load', function() {
+            // Small delay to ensure content is fully loaded
+            setTimeout(function() {
+                // Auto-print if there's content
+                {% if formatted_text %}
+                window.print();
+                {% endif %}
+            }, 1000);
+        });
+        
+        // Handle print dialog cancel/close
+        window.addEventListener('afterprint', function() {
+            // Optionally close window after printing
+            // window.close();
+        });
+    </script>
+</body>
+</html>
