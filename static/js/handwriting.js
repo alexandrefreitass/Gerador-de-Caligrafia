@@ -143,55 +143,80 @@ class HandwritingApp {
                 throw new Error('html2canvas library not loaded');
             }
 
-            // Create a canvas to capture the notebook page
+            // Get the notebook element
             const notebook = this.notebookPreview;
             
-            // Use html2canvas to capture the element with enhanced background support
-            const canvas = await html2canvas(notebook, {
+            // Create a temporary container for export
+            const exportContainer = document.createElement('div');
+            exportContainer.style.cssText = `
+                position: fixed;
+                top: -9999px;
+                left: -9999px;
+                width: 794px;
+                height: auto;
+                min-height: 600px;
+                background-color: #ffffff;
+                padding: 0;
+                margin: 0;
+                z-index: -1;
+            `;
+            
+            // Clone the notebook content
+            const notebookClone = notebook.cloneNode(true);
+            notebookClone.style.cssText = `
+                width: 794px;
+                height: auto;
+                min-height: 600px;
+                background-color: #ffffff;
+                background-image: 
+                    linear-gradient(to right, transparent 45px, #ff6b6b 45px, #ff6b6b 46px, transparent 46px),
+                    repeating-linear-gradient(
+                        transparent,
+                        transparent 24px,
+                        #87ceeb 24px,
+                        #87ceeb 25px
+                    );
+                background-size: 100% 100%;
+                background-repeat: no-repeat;
+                position: relative;
+                padding: 0;
+                margin: 0;
+                box-shadow: none;
+                transform: none;
+            `;
+            
+            // Add holes manually as a div
+            const holes = document.createElement('div');
+            holes.style.cssText = `
+                position: absolute;
+                left: 15px;
+                top: 0;
+                width: 8px;
+                height: 100%;
+                background-image: radial-gradient(circle at center, #ddd 2px, transparent 2px);
+                background-size: 8px 40px;
+                background-repeat: repeat-y;
+                z-index: 1;
+            `;
+            
+            notebookClone.appendChild(holes);
+            exportContainer.appendChild(notebookClone);
+            document.body.appendChild(exportContainer);
+
+            // Wait for render
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Capture with simpler options
+            const canvas = await html2canvas(exportContainer, {
                 scale: quality,
                 backgroundColor: '#ffffff',
-                useCORS: true,
-                allowTaint: false,
-                width: notebook.offsetWidth,
-                height: notebook.offsetHeight,
-                logging: false,
-                removeContainer: true,
-                foreignObjectRendering: true,
-                onclone: (clonedDoc) => {
-                    // Force background styles in the cloned document
-                    const clonedNotebook = clonedDoc.querySelector('.notebook-page');
-                    if (clonedNotebook) {
-                        // Apply notebook background manually
-                        clonedNotebook.style.backgroundColor = '#ffffff';
-                        clonedNotebook.style.backgroundImage = `
-                            linear-gradient(to right, transparent 45px, #ff6b6b 45px, #ff6b6b 46px, transparent 46px),
-                            repeating-linear-gradient(
-                                transparent,
-                                transparent 24px,
-                                #87ceeb 24px,
-                                #87ceeb 25px
-                            )
-                        `;
-                        clonedNotebook.style.backgroundSize = '100% 100%';
-                        clonedNotebook.style.backgroundRepeat = 'no-repeat';
-                        
-                        // Ensure holes are visible
-                        const beforeElement = clonedDoc.createElement('div');
-                        beforeElement.style.cssText = `
-                            position: absolute;
-                            left: 15px;
-                            top: 0;
-                            width: 8px;
-                            height: 100%;
-                            background-image: radial-gradient(circle at center, #ddd 2px, transparent 2px);
-                            background-size: 8px 40px;
-                            background-repeat: repeat-y;
-                            z-index: 1;
-                        `;
-                        clonedNotebook.insertBefore(beforeElement, clonedNotebook.firstChild);
-                    }
-                }
+                width: 794,
+                height: exportContainer.offsetHeight,
+                logging: true
             });
+
+            // Remove temporary container
+            document.body.removeChild(exportContainer);
 
             // Convert to blob and download
             canvas.toBlob((blob) => {
