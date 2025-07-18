@@ -4,6 +4,7 @@ class HandwritingApp {
         this.initializeElements();
         this.attachEventListeners();
         this.lastTransformedText = '';
+        console.log('HandwritingApp initialized');
     }
 
     initializeElements() {
@@ -13,38 +14,68 @@ class HandwritingApp {
         this.exportBtn = document.getElementById('exportBtn');
         this.notebookPreview = document.getElementById('notebookPreview');
         this.statusMessages = document.getElementById('statusMessages');
-        this.exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
+        
+        // Only initialize modal if element exists
+        const modalElement = document.getElementById('exportModal');
+        if (modalElement && typeof bootstrap !== 'undefined') {
+            this.exportModal = new bootstrap.Modal(modalElement);
+        }
+        
         this.confirmExportBtn = document.getElementById('confirmExportBtn');
         this.imageQuality = document.getElementById('imageQuality');
+        
+        console.log('Elements initialized');
     }
 
     attachEventListeners() {
-        this.transformBtn.addEventListener('click', () => this.transformText());
-        this.clearBtn.addEventListener('click', () => this.clearText());
-        this.exportBtn.addEventListener('click', () => this.showExportModal());
-        this.confirmExportBtn.addEventListener('click', () => this.exportAsImage());
+        if (this.transformBtn) {
+            this.transformBtn.addEventListener('click', () => this.transformText());
+        }
         
-        // Enable transform on Enter (Ctrl+Enter or Shift+Enter)
-        this.inputText.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.shiftKey) && e.key === 'Enter') {
-                e.preventDefault();
-                this.transformText();
-            }
-        });
-
-        // Auto-transform on input change (debounced)
-        let debounceTimer;
-        this.inputText.addEventListener('input', () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                if (this.inputText.value.trim() && this.inputText.value.trim() !== this.lastTransformedText) {
+        if (this.clearBtn) {
+            this.clearBtn.addEventListener('click', () => this.clearText());
+        }
+        
+        if (this.exportBtn) {
+            this.exportBtn.addEventListener('click', () => this.showExportModal());
+        }
+        
+        if (this.confirmExportBtn) {
+            this.confirmExportBtn.addEventListener('click', () => this.exportAsImage());
+        }
+        
+        if (this.inputText) {
+            // Enable transform on Enter (Ctrl+Enter or Shift+Enter)
+            this.inputText.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.shiftKey) && e.key === 'Enter') {
+                    e.preventDefault();
                     this.transformText();
                 }
-            }, 1000); // Auto-transform after 1 second of no typing
-        });
+            });
+
+            // Auto-transform on input change (debounced)
+            let debounceTimer;
+            this.inputText.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    if (this.inputText.value.trim() && this.inputText.value.trim() !== this.lastTransformedText) {
+                        this.transformText();
+                    }
+                }, 1000); // Auto-transform after 1 second of no typing
+            });
+        }
+        
+        console.log('Event listeners attached');
     }
 
     async transformText() {
+        console.log('Starting text transformation');
+        
+        if (!this.inputText) {
+            console.error('Input text element not found');
+            return;
+        }
+        
         const text = this.inputText.value.trim();
         
         if (!text) {
@@ -65,15 +96,22 @@ class HandwritingApp {
                 body: JSON.stringify({ text: text })
             });
 
-            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-            if (response.ok) {
+            const data = await response.json();
+            console.log('Received data:', data);
+
+            if (data.formatted_text) {
                 this.displayHandwrittenText(data.formatted_text);
                 this.lastTransformedText = text;
-                this.exportBtn.style.display = 'block';
+                if (this.exportBtn) {
+                    this.exportBtn.style.display = 'block';
+                }
                 this.showStatus('Texto transformado com sucesso!', 'success');
             } else {
-                throw new Error(data.error || 'Erro desconhecido');
+                throw new Error('No formatted text received');
             }
         } catch (error) {
             console.error('Error transforming text:', error);
@@ -85,12 +123,25 @@ class HandwritingApp {
     }
 
     displayHandwrittenText(formattedText) {
+        console.log('Displaying handwritten text:', formattedText);
+        
+        if (!this.notebookPreview) {
+            console.error('Notebook preview element not found');
+            return;
+        }
+        
         const handwrittenDiv = this.notebookPreview.querySelector('.handwritten-text');
-        // Ensure formattedText is not null or undefined
-        if (formattedText && typeof formattedText === 'string') {
+        if (!handwrittenDiv) {
+            console.error('Handwritten text container not found');
+            return;
+        }
+        
+        // Ensure formattedText is valid
+        if (formattedText && typeof formattedText === 'string' && formattedText.trim() !== '') {
             handwrittenDiv.innerHTML = formattedText;
+            console.log('Text displayed successfully');
         } else {
-            // Fallback to placeholder if formatted text is invalid
+            console.warn('Invalid formatted text, showing placeholder');
             this.displayPlaceholder();
             return;
         }
@@ -103,7 +154,19 @@ class HandwritingApp {
     }
 
     displayPlaceholder() {
+        console.log('Displaying placeholder');
+        
+        if (!this.notebookPreview) {
+            console.error('Notebook preview element not found');
+            return;
+        }
+        
         const handwrittenDiv = this.notebookPreview.querySelector('.handwritten-text');
+        if (!handwrittenDiv) {
+            console.error('Handwritten text container not found');
+            return;
+        }
+        
         handwrittenDiv.innerHTML = `
             <span class="placeholder-text text-muted">
                 Digite seu texto ao lado e clique em "Transformar em Manuscrito" para ver o resultado aqui.
@@ -112,33 +175,49 @@ class HandwritingApp {
     }
 
     clearText() {
-        this.inputText.value = '';
+        console.log('Clearing text');
+        
+        if (this.inputText) {
+            this.inputText.value = '';
+            this.inputText.focus();
+        }
+        
         this.displayPlaceholder();
-        this.exportBtn.style.display = 'none';
+        
+        if (this.exportBtn) {
+            this.exportBtn.style.display = 'none';
+        }
+        
         this.lastTransformedText = '';
         this.clearStatus();
-        this.inputText.focus();
     }
 
     showExportModal() {
-        this.exportModal.show();
+        if (this.exportModal) {
+            this.exportModal.show();
+        }
     }
 
     async exportAsImage() {
+        if (!this.inputText) {
+            return;
+        }
+        
         const text = this.inputText.value.trim();
         if (!text) {
             this.showStatus('Não há texto para exportar.', 'warning');
             return;
         }
 
-        // Get quality setting
-        const quality = parseInt(this.imageQuality.value);
+        const quality = this.imageQuality ? parseInt(this.imageQuality.value) : 2;
         
         try {
-            this.confirmExportBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Exportando...';
-            this.confirmExportBtn.disabled = true;
+            if (this.confirmExportBtn) {
+                this.confirmExportBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Exportando...';
+                this.confirmExportBtn.disabled = true;
+            }
 
-            // Wait for html2canvas to load if not available yet
+            // Wait for html2canvas to load
             let attempts = 0;
             while (typeof html2canvas === 'undefined' && attempts < 10) {
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -149,10 +228,12 @@ class HandwritingApp {
                 throw new Error('html2canvas library not loaded');
             }
 
-            // Get the notebook element
             const notebook = this.notebookPreview;
+            if (!notebook) {
+                throw new Error('Notebook element not found');
+            }
             
-            // Create a temporary container for export
+            // Create temporary container
             const exportContainer = document.createElement('div');
             exportContainer.style.cssText = `
                 position: fixed;
@@ -167,7 +248,7 @@ class HandwritingApp {
                 z-index: -1;
             `;
             
-            // Clone the notebook content
+            // Clone notebook content
             const notebookClone = notebook.cloneNode(true);
             notebookClone.style.cssText = `
                 width: 794px;
@@ -191,7 +272,7 @@ class HandwritingApp {
                 transform: none;
             `;
             
-            // Add holes manually as a div
+            // Add holes
             const holes = document.createElement('div');
             holes.style.cssText = `
                 position: absolute;
@@ -212,19 +293,19 @@ class HandwritingApp {
             // Wait for render
             await new Promise(resolve => setTimeout(resolve, 100));
 
-            // Capture with simpler options
+            // Capture
             const canvas = await html2canvas(exportContainer, {
                 scale: quality,
                 backgroundColor: '#ffffff',
                 width: 794,
                 height: exportContainer.offsetHeight,
-                logging: true
+                logging: false
             });
 
             // Remove temporary container
             document.body.removeChild(exportContainer);
 
-            // Convert to blob and download
+            // Download
             canvas.toBlob((blob) => {
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
@@ -242,14 +323,22 @@ class HandwritingApp {
             console.error('Error exporting image:', error);
             this.showStatus('Erro ao exportar imagem. Tente novamente.', 'danger');
         } finally {
-            this.confirmExportBtn.innerHTML = '<i class="fas fa-download me-2"></i>Exportar Imagem';
-            this.confirmExportBtn.disabled = false;
+            if (this.confirmExportBtn) {
+                this.confirmExportBtn.innerHTML = '<i class="fas fa-download me-2"></i>Exportar Imagem';
+                this.confirmExportBtn.disabled = false;
+            }
         }
 
-        this.exportModal.hide();
+        if (this.exportModal) {
+            this.exportModal.hide();
+        }
     }
 
     setLoadingState(loading) {
+        if (!this.transformBtn || !this.notebookPreview) {
+            return;
+        }
+        
         if (loading) {
             this.transformBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Transformando...';
             this.transformBtn.disabled = true;
@@ -262,6 +351,10 @@ class HandwritingApp {
     }
 
     showStatus(message, type) {
+        if (!this.statusMessages) {
+            return;
+        }
+        
         this.statusMessages.innerHTML = `
             <div class="alert alert-${type} alert-dismissible fade show" role="alert">
                 ${message}
@@ -269,7 +362,7 @@ class HandwritingApp {
             </div>
         `;
 
-        // Auto-hide success messages after 3 seconds
+        // Auto-hide success messages
         if (type === 'success') {
             setTimeout(() => {
                 this.clearStatus();
@@ -278,22 +371,22 @@ class HandwritingApp {
     }
 
     clearStatus() {
-        this.statusMessages.innerHTML = '';
+        if (this.statusMessages) {
+            this.statusMessages.innerHTML = '';
+        }
     }
 }
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing HandwritingApp');
     new HandwritingApp();
 });
 
-// Add some sample text for demonstration
+// Sample text placeholder
 document.addEventListener('DOMContentLoaded', () => {
     const inputText = document.getElementById('inputText');
-    const sampleText = `Digite ou cole seu texto aqui...`;
-
-    // Set sample text if input is empty
-    if (!inputText.value.trim()) {
-        inputText.placeholder = sampleText;
+    if (inputText && !inputText.value.trim()) {
+        inputText.placeholder = 'Digite ou cole seu texto aqui...';
     }
 });
