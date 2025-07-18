@@ -1,10 +1,9 @@
 
 # Transformador de Texto Manuscrito - Aplicação Flask
 
-<div align="center">
-    https://github.com/user-attachments/assets/d0760d3c-4d43-49ea-bc07-93a99300c289
-</div>
-<br/><br/>
+https://github.com/user-attachments/assets/d0760d3c-4d43-49ea-bc07-93a99300c289
+
+<br/>
 
 Este projeto consiste em uma aplicação web desenvolvida em **Python Flask** que transforma texto digitado em um estilo de escrita manuscrita realística, exibido em um fundo de página de caderno. A ferramenta oferece uma interface intuitiva para inserir texto e visualizá-lo com aparência de escrita à mão, incluindo linhas pautadas e margem lateral.
 
