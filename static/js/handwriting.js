@@ -86,7 +86,14 @@ class HandwritingApp {
 
     displayHandwrittenText(formattedText) {
         const handwrittenDiv = this.notebookPreview.querySelector('.handwritten-text');
-        handwrittenDiv.innerHTML = formattedText;
+        // Ensure formattedText is not null or undefined
+        if (formattedText && typeof formattedText === 'string') {
+            handwrittenDiv.innerHTML = formattedText;
+        } else {
+            // Fallback to placeholder if formatted text is invalid
+            this.displayPlaceholder();
+            return;
+        }
         
         // Scroll to top of preview
         const previewContainer = document.querySelector('.preview-container');

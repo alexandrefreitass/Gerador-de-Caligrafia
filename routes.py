@@ -23,6 +23,10 @@ def transform_text():
         # Process the text to add handwriting irregularities
         formatted_text = add_handwriting_effects(text)
         
+        # Ensure we always return a valid string
+        if not formatted_text or not isinstance(formatted_text, str):
+            formatted_text = text  # Fallback to original text if processing fails
+        
         return jsonify({'formatted_text': formatted_text})
     
     except Exception as e:
