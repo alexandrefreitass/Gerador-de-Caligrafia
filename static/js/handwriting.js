@@ -102,6 +102,15 @@ class HandwritingApp {
         }
     }
 
+    displayPlaceholder() {
+        const handwrittenDiv = this.notebookPreview.querySelector('.handwritten-text');
+        handwrittenDiv.innerHTML = `
+            <span class="placeholder-text text-muted">
+                Digite seu texto ao lado e clique em "Transformar em Manuscrito" para ver o resultado aqui.
+            </span>
+        `;
+    }
+
     clearText() {
         this.inputText.value = '';
         this.displayPlaceholder();
