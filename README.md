@@ -2,7 +2,7 @@
 # Transformador de Texto Manuscrito - Aplicação Flask
 
 <div align="center">
-    <img src="static/img/favicon.png" alt="Transformador de Texto Manuscrito" width="128" height="128" />
+    <img src="gerador/static/img/sistema.png" alt="Transformador de Texto Manuscrito" width="300" height="300" />
 </div>
 <br/><br/>
 

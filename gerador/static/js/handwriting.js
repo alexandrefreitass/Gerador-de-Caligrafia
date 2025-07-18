@@ -246,21 +246,12 @@ class HandwritingApp {
             
             // Clone notebook content
             const notebookClone = notebook.cloneNode(true);
+            notebookClone.className = 'notebook-page';
             notebookClone.style.cssText = `
                 width: 794px;
                 height: auto;
                 min-height: 600px;
                 background-color: #ffffff;
-                background-image: 
-                    linear-gradient(to right, transparent 45px, #ff6b6b 45px, #ff6b6b 46px, transparent 46px),
-                    repeating-linear-gradient(
-                        transparent,
-                        transparent 24px,
-                        #87ceeb 24px,
-                        #87ceeb 25px
-                    );
-                background-size: 100% 100%;
-                background-repeat: no-repeat;
                 position: relative;
                 padding: 0;
                 margin: 0;
@@ -268,25 +259,67 @@ class HandwritingApp {
                 transform: none;
             `;
             
-            // Add holes
-            const holes = document.createElement('div');
-            holes.style.cssText = `
+            // Create line element to simulate notebook lines
+            const linesDiv = document.createElement('div');
+            linesDiv.style.cssText = `
                 position: absolute;
-                left: 15px;
                 top: 0;
-                width: 8px;
+                left: 0;
+                width: 100%;
                 height: 100%;
-                background-image: radial-gradient(circle at center, #ddd 2px, transparent 2px);
-                background-size: 8px 40px;
-                background-repeat: repeat-y;
-                z-index: 1;
+                z-index: 0;
+                pointer-events: none;
             `;
             
-            notebookClone.appendChild(holes);
+            // Add margin line
+            const marginLine = document.createElement('div');
+            marginLine.style.cssText = `
+                position: absolute;
+                left: 45px;
+                top: 0;
+                width: 1px;
+                height: 100%;
+                background-color: #ff6b6b;
+                z-index: 1;
+            `;
+            linesDiv.appendChild(marginLine);
+            
+            // Insert lines before the content
+            notebookClone.insertBefore(linesDiv, notebookClone.firstChild);
+            
+            // Make text appear above lines
+            const textDiv = notebookClone.querySelector('.handwritten-text');
+            if (textDiv) {
+                textDiv.style.position = 'relative';
+                textDiv.style.zIndex = '2';
+            }
+            
             exportContainer.appendChild(notebookClone);
             document.body.appendChild(exportContainer);
 
-            // Wait for render
+            // Wait for render to get accurate height
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            // Now get the actual height after content is rendered
+            const notebookHeight = notebookClone.scrollHeight || notebookClone.offsetHeight || 600;
+            const lineCount = Math.ceil(notebookHeight / 25);
+            
+            // Add horizontal lines based on actual height
+            for (let i = 0; i < lineCount; i++) {
+                const line = document.createElement('div');
+                line.style.cssText = `
+                    position: absolute;
+                    left: 0;
+                    top: ${i * 25 + 24}px;
+                    width: 100%;
+                    height: 1px;
+                    background-color: #87ceeb;
+                    z-index: 0;
+                `;
+                linesDiv.appendChild(line);
+            }
+
+            // Wait again for lines to render
             await new Promise(resolve => setTimeout(resolve, 100));
 
             // Capture
