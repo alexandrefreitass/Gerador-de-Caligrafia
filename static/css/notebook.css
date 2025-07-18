@@ -41,19 +41,7 @@ body {
     margin: 0 auto;
 }
 
-/* Notebook holes */
-.notebook-page::before {
-    content: '';
-    position: absolute;
-    left: 15px;
-    top: 0;
-    width: 8px;
-    height: 100%;
-    background-image: 
-        radial-gradient(circle at center, #ddd 2px, transparent 2px);
-    background-size: 8px 40px;
-    background-repeat: repeat-y;
-}
+
 
 /* Handwritten text styling */
 .handwritten-text {
