@@ -154,7 +154,7 @@ class HandwritingApp {
     }
 
     displayPlaceholder() {
-        console.log('Displaying placeholder');
+        console.log('Clearing notebook page');
         
         if (!this.notebookPreview) {
             console.error('Notebook preview element not found');
@@ -167,11 +167,7 @@ class HandwritingApp {
             return;
         }
         
-        handwrittenDiv.innerHTML = `
-            <span class="placeholder-text text-muted">
-                Digite seu texto ao lado e clique em "Transformar em Manuscrito" para ver o resultado aqui.
-            </span>
-        `;
+        handwrittenDiv.innerHTML = '';
     }
 
     clearText() {
