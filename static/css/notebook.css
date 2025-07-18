@@ -51,7 +51,7 @@ body {
     color: #000000;
     padding: 25px 30px 40px 60px;
     white-space: pre-line;
-    transform: rotate(-0.3deg);
+    transform: none;
     letter-spacing: 0.3px;
     text-shadow: 0.3px 0.3px 0px rgba(0, 0, 0, 0.2);
 }
