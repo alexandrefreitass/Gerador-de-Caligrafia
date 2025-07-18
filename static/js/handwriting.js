@@ -99,7 +99,6 @@ class HandwritingApp {
         const handwrittenDiv = this.notebookPreview.querySelector('.handwritten-text');
         handwrittenDiv.innerHTML = `
             <span class="placeholder-text text-muted">
-                <i class="fas fa-arrow-left me-2"></i>
                 Digite seu texto ao lado e clique em "Transformar em Manuscrito" para ver o resultado aqui.
             </span>
         `;
@@ -284,25 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Add some sample text for demonstration
 document.addEventListener('DOMContentLoaded', () => {
     const inputText = document.getElementById('inputText');
-    const sampleText = `Relatório Médico - Paciente João Silva
-
-Alterações Importantes:
-
-Exames Laboratoriais:
-• Glicemia elevada: 115 mg/dL (indicando hiperglicemia)
-• Colesterol total alto: aumento do risco cardiovascular
-• Função renal comprometida: ureia 99 mg/dL
-
-Recomendações:
-• Acompanhamento médico regular
-• Dieta controlada em açúcares
-• Exercícios físicos moderados
-
-Observações Gerais:
-É fundamental que o paciente siga rigorosamente as orientações médicas para controle dos níveis glicêmicos e melhoria do perfil lipídico.
-
-Data: ${new Date().toLocaleDateString('pt-BR')}
-Assinatura: Dr. Maria Santos`;
+    const sampleText = `Digite ou cole seu texto aqui...`;
 
     // Set sample text if input is empty
     if (!inputText.value.trim()) {
